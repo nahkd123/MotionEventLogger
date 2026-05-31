@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var values by remember { mutableStateOf<List<Float>?>(null) }
+            var buttonStates by remember { mutableIntStateOf(0) }
 
             MotionEventLoggerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -71,6 +73,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .motionEventSpy { event ->
                                 values = axes.map { event.getAxisValue(it.type) }
+                                buttonStates = event.buttonState
                             }) {
                         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium) {
                             val values = values
@@ -78,6 +81,8 @@ class MainActivity : ComponentActivity() {
                             if (values == null) {
                                 Text("Touch the screen with finger or pen")
                             } else {
+                                Text("Button states: ${buttonStates.toString(2).padStart(32, '0')}")
+
                                 for (i in values.indices) {
                                     val axis = axes[i]
                                     val value = values[i]
